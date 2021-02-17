@@ -1,36 +1,78 @@
-let ballX;
-let ballY;
-let bg;
-let ballXspeed = 10;
-let ballYspeed = 10;
+var dots = [];
+var dSize = 10;
+var player,ball, ai;
 
-function setup() {
-createCanvas (windowWidth,windowHeight);
+var txtSize = 10;
+var playerScore = 0;
+var aiScore = 0;
 
-ballX = random(windowWidth);
-ballY = random(windowHeight);
-rectMode(CENTER);
-imageMode(CENTER);
-}
-function draw(){
-  background(80,80,180);
-  rect(mouseX,mouseY,20,70);
-strokeWeight(random(0,10))
-  stroke(random(255),random(255),random(255));
-  ellipse(ballX,ballY,50,50);
-  ballX = ballX + ballXspeed;
-  ballY = ballY + ballYspeed;
-  if (ballX >= windowWidth || ballX <= 0) {
-    ballXspeed = ballXspeed * -1;
+var go = false;
+
+
+function setup(){
+  createCanvas(800,500);
+
+  for(let y = dSize/2; y < height; y += dSize*2){
+    dots.push(createVector(width/2 - dSize/2,y));
+
+
+    player = new Player();
+    ball = new Ball();
+    ai = new AI();
     }
-  if (ballY >= windowHeight || ballY <= 0) {
-    ballYspeed = ballYspeed * -1;
-  }
-    if(dist(mouseX,mouseY,ballX,ballY) < 50){
-    ballYspeed = ballYspeed * -1;
-    ballXspeed = ballXspeed * -1;
   }
 
+function draw() {
+  background(0);
 
+if(go){
+  ball.edges();
+  ball.update();
+  player.update();
+  ai.update();
+  ball.scores();
+}
+noStroke();
+fill(255,100);
+drawSquares();
+  ai.show();
+  player.show();
+  ball.show();
 
+  drawScores();
+}
+function drawScores() {
+    let x1 = width/4;
+    let x2 = width*3/4;
+    let y = txtSize*1.5;
+
+    noStroke();
+    fill(255);
+    textAlign(CENTER);
+    textSize(txtSize);
+    text((playerScore), x1,y);
+    text((aiScore), x2, y);
+}
+function drawSquares(){
+  for(let i = 0; i<dots.length; i++){
+    let x = dots[i].x;
+    let y = dots[i].y;
+
+    rect(x,y,dSize,dSize);
+  }
+}
+function keyPressed(){
+  go = true;
+  if(key == 'w' || keyCode == UP_ARROW){
+    player.up();
+  }
+  else if(key == 's' || keyCode == DOWN_ARROW){
+    player.down();
+  }
+}
+
+function keyReleased(){
+  if((key == 'w' || keyCode == UP_ARROW)||(key == 's' || keyCode == DOWN_ARROW)){
+    player.stp();
+  }
 }
